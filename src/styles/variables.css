@@ -1,0 +1,34 @@
+:root {
+  /* Dark Mode (Default) */
+  --bg-primary: #0F0F12;
+  --bg-secondary: #1A1A1E;
+  --text-primary: #EAEAEA;
+  --text-secondary: #B0A8A8;
+  --accent-primary: #C97C7C; /* Dusty Red */
+  --accent-secondary: #E4A1A1; /* Muted Rose */
+  --divider: #2A2A2A;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 64px;
+
+  /* Typography */
+  --font-family: 'Inter', sans-serif;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 20px;
+  --font-size-xl: 32px;
+  --font-size-xxl: 48px;
+}
+
+[data-theme='light'] {
+  --bg-primary: #F9F5F5; /* Warm off-white */
+  --bg-secondary: #FFFFFF;
+  --text-primary: #2A2A2A;
+  --text-secondary: #5A5A5A;
+  --divider: #E0E0E0;
+}
