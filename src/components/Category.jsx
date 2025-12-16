@@ -13,6 +13,7 @@ export default function CategoryRow({ title, items }) {
             >
                 <h2 style={{ fontSize: 18 }}>{title}</h2>
                 <button
+                    className="hover-scale"
                     style={{
                         fontSize: 13,
                         color: "#fff",
@@ -40,6 +41,7 @@ export default function CategoryRow({ title, items }) {
             >
                 {items.map((item, i) => (
                     <div
+                        className="hover-lift"
                         key={i}
                         style={{
                             minWidth: 220,

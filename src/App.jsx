@@ -1,3 +1,5 @@
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
@@ -51,6 +53,7 @@ const SectionHeader = ({ title, description, titleSize = 36 }) => (
 
 const FilterButton = ({ label, isActive, onClick, activeColor = "rgba(255,100,120,0.9)" }) => (
   <button
+    className="hover-scale"
     onClick={onClick}
     style={{
       padding: "6px 14px",
@@ -95,6 +98,7 @@ function FeaturedLectures() {
       >
         {FEATURED_ITEMS.map((text, i) => (
           <div
+            className="hover-lift"
             key={i}
             style={{
               borderRadius: 16,
@@ -132,6 +136,7 @@ function StartWatchingPage() {
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24 }}>
           {LESSON_FILTERS.map((filter) => (
             <button
+              className="hover-scale"
               key={filter}
               onClick={() => setSelectedFilter(filter)}
               style={{
@@ -162,6 +167,7 @@ function StartWatchingPage() {
 
 const LessonCard = ({ lesson }) => (
   <div
+    className="hover-lift"
     style={{
       borderRadius: 20,
       border: "1px solid rgba(255,255,255,0.08)",
@@ -209,6 +215,7 @@ function CoursesPage() {
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
           {COURSE_CATEGORIES.map((cat) => (
             <button
+              className="hover-scale"
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               style={{
@@ -230,6 +237,7 @@ function CoursesPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
           {filteredCourses.map((course) => (
             <div
+              className="hover-lift"
               key={course.id}
               style={{
                 borderRadius: 20,
@@ -273,6 +281,7 @@ function PricingPage() {
 
 const PricingCard = ({ plan }) => (
   <div
+    className="hover-lift"
     style={{
       borderRadius: 24,
       padding: 24,
@@ -294,6 +303,7 @@ const PricingCard = ({ plan }) => (
       ))}
     </ul>
     <button
+      className="hover-scale"
       style={{
         marginTop: 18,
         width: "100%",
@@ -339,6 +349,7 @@ function FaqPage() {
 
 const FaqItem = ({ item, isOpen, onToggle }) => (
   <div
+    className="hover-lift"
     style={{
       borderRadius: 16,
       border: "1px solid rgba(255,255,255,0.1)",
@@ -380,6 +391,8 @@ export default function App() {
       <Route path="/courses" element={<CoursesPage />} />
       <Route path="/pricing" element={<PricingPage />} />
       <Route path="/faq" element={<FaqPage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<SignUp />} />
     </Routes>
   );
 }

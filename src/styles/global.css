@@ -42,3 +42,41 @@ button {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-secondary);
 }
+
+/* -------------------------------------------------------------------------- */
+/*                               ✨ Hover Effects                             */
+/* -------------------------------------------------------------------------- */
+
+/* Scale Up: For primary buttons and small interactive elements */
+.hover-scale {
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.hover-scale:hover {
+    transform: scale(1.05);
+}
+
+/* Lift Up: For cards and containers */
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Basic shadow boost, can be overridden */
+}
+
+/* Opacity Fade: For text links and secondary icons */
+.hover-opacity {
+    transition: opacity 0.2s ease;
+}
+.hover-opacity:hover {
+    opacity: 0.75;
+}
+
+/* Glow Effect: For special CTA buttons */
+.hover-glow {
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+.hover-glow:hover {
+    box-shadow: 0 0 20px rgba(255, 100, 120, 0.6) !important;
+    transform: scale(1.03);
+}

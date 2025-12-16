@@ -27,11 +27,11 @@ export default function Hero() {
     return (
         <section
             style={{
-                padding: "48px 40px 32px 40px", // 위·아래 여백 줄인 버전
+                padding: "48px 40px 32px 40px",
                 display: "grid",
                 gridTemplateColumns: "minmax(0, 1.9fr) minmax(0, 1.3fr)",
                 gap: 56,
-                alignItems: "center",
+                alignItems: "flex-start", // ② 위쪽 기준 정렬
                 minHeight: 460,
             }}
         >
@@ -42,15 +42,18 @@ export default function Hero() {
                     borderRadius: 0,
                     overflow: "hidden",
                     background: "transparent",
+
+                    // ① 전체 컬럼 중 일부만 쓰면서, 비율은 16:9 유지
+                    width: "82%",          // 필요하면 70~85 사이로 조절
+                    aspectRatio: "16 / 9",
+                    alignSelf: "flex-start",
                 }}
             >
-
-                {/* 16:9 VIDEO WRAPPER */}
+                {/* VIDEO WRAPPER - 카드 전체를 채우는 레이어 */}
                 <div
                     style={{
-                        width: "100%",
-                        aspectRatio: "16 / 9",
-                        position: "relative",
+                        position: "absolute",
+                        inset: 0,
                     }}
                 >
                     {/* BLUR + DARK OVERLAY */}
@@ -66,7 +69,7 @@ export default function Hero() {
                         }}
                     />
 
-                    {/* VIDEO */}
+                    {/* VIMEO IFRAME */}
                     <iframe
                         title="SEEWAVE intro"
                         src="https://player.vimeo.com/video/1143730520?background=1&autopause=0"
@@ -96,7 +99,6 @@ export default function Hero() {
                     }}
                 >
                     <div style={{ maxWidth: 520 }}>
-
                         <p
                             style={{
                                 fontSize: 12,
@@ -150,29 +152,26 @@ export default function Hero() {
                         >
                             No narration overload · Visual-first · New lessons every week
                         </p>
-
                     </div>
                 </div>
-
             </div>
-
 
             {/* -------- 오른쪽 : Sample lesson 카드 -------- */}
             <div
+                className="hover-lift"
                 style={{
-                    borderRadius: 34,
-                    padding: 24,
+                    borderRadius: 28,
+                    padding: 22,
                     background:
-                        "radial-gradient(circle at top, rgba(255,120,150,0.16), rgba(5,5,12,0.98))",
-                    border: "1px solid rgba(255,120,150,0.9)",
-                    boxShadow:
-                        "0 0 40px rgba(255,120,150,0.35), 0 40px 80px rgba(0,0,0,0.9)",
+                        "linear-gradient(135deg, rgba(8,8,14,0.98), rgba(3,3,7,0.98))",
+                    border: "1px solid rgba(255,140,150,0.28)", // 훨씬 얌전한 테두리
+                    boxShadow: "0 18px 40px rgba(0,0,0,0.85)",   // 퍼지는 글로우 제거
                 }}
             >
                 <p
                     style={{
                         fontSize: 13,
-                        marginBottom: 18,
+                        marginBottom: 16,
                         color: "rgba(255,255,255,0.9)",
                     }}
                 >
@@ -181,61 +180,61 @@ export default function Hero() {
 
                 <div
                     style={{
-                        borderRadius: 24,
-                        padding: "22px 24px 22px",
+                        borderRadius: 22,
+                        padding: "20px 22px 20px",
                         background:
-                            "linear-gradient(135deg, rgba(10,10,18,0.98), rgba(2,2,5,1))",
-                        border: "1px solid rgba(255,255,255,0.16)",
-                        boxShadow: "0 20px 40px rgba(0,0,0,0.7)",
+                            "linear-gradient(135deg, #141118, #09070d)",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        boxShadow: "0 14px 30px rgba(0,0,0,0.8)",
                     }}
                 >
                     {/* 오선지 + 음표 점 */}
                     <div
                         style={{
-                            borderRadius: 20,
-                            padding: 18,
-                            background:
-                                "linear-gradient(0deg, rgba(15,15,24,1), rgba(5,5,10,1))",
-                            boxShadow: "0 0 0 1px rgba(255,255,255,0.06) inset",
-                            marginBottom: 18,
+                            borderRadius: 18,
+                            padding: 16,
+                            background: "#181119",
+                            boxShadow: "0 0 0 1px rgba(255,255,255,0.04) inset",
+                            marginBottom: 16,
                         }}
                     >
                         <div
                             style={{
-                                height: 90,
-                                borderRadius: 18,
-                                backgroundColor: "rgba(0,0,0,0.96)",
+                                height: 78,
+                                borderRadius: 16,
+                                backgroundColor: "#080609",
                                 backgroundImage:
-                                    "repeating-linear-gradient(0deg, transparent, transparent 13px, rgba(255,255,255,0.16) 13px, rgba(255,255,255,0.16) 14px)",
-                                backgroundRepeat: "repeat",
+                                    "repeating-linear-gradient(0deg, transparent, transparent 11px, rgba(255,200,200,0.10) 11px, rgba(255,200,200,0.10) 12px)",
                                 position: "relative",
                                 overflow: "hidden",
                             }}
                         >
                             {[
-                                { x: 0.1, y: 62 },
-                                { x: 0.22, y: 52 },
-                                { x: 0.34, y: 66 },
-                                { x: 0.46, y: 44 },
-                                { x: 0.58, y: 55 },
-                                { x: 0.7, y: 38 },
-                                { x: 0.82, y: 48 },
-                                { x: 0.94, y: 60 },
+                                { x: 0.1, y: 64 },
+                                { x: 0.22, y: 54 },
+                                { x: 0.34, y: 68 },
+                                { x: 0.46, y: 46 },
+                                { x: 0.58, y: 57 },
+                                { x: 0.7, y: 40 },
+                                { x: 0.82, y: 50 },
+                                { x: 0.94, y: 62 },
                             ].map((pos, i) => (
-                                <div
+                                <button
+                                    className="hover-scale"
+                                    onClick={() => navigate("/pricing")}
                                     key={i}
                                     style={{
                                         position: "absolute",
                                         left: `${pos.x * 100}%`,
                                         top: `${pos.y}%`,
-                                        width: 14,
-                                        height: 14,
+                                        width: 11,
+                                        height: 11,
                                         borderRadius: "50%",
                                         transform: "translate(-50%, -50%)",
                                         background:
-                                            "radial-gradient(circle, #ffe0f0 0%, #ff86a5 55%, #ff506b 100%)",
+                                            "radial-gradient(circle, #ffe7df 0%, #ff9d8b 55%, #ff6b6b 100%)",
                                         boxShadow:
-                                            "0 0 18px rgba(255,120,150,0.9), 0 0 32px rgba(255,120,150,0.5)",
+                                            "0 0 10px rgba(255,140,150,0.7)",
                                     }}
                                 />
                             ))}
@@ -245,8 +244,8 @@ export default function Hero() {
                     <p
                         style={{
                             fontSize: 12,
-                            color: "rgba(255,255,255,0.78)",
-                            marginBottom: 12,
+                            color: "rgba(255,255,255,0.8)",
+                            marginBottom: 10,
                         }}
                     >
                         Chord tones, passing tones and tensions animated on a single phrase.
