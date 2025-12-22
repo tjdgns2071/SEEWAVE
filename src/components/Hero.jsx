@@ -3,46 +3,15 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 /** ✅ 여기 값만 바꾸면 “영상 크기”가 바로 조절됨 */
-const DESKTOP_VIDEO_MAX_WIDTH = 820; // 760~900 사이로 조절 추천
-const DESKTOP_ASPECT = "16 / 9"; // 비율 유지 (잘림 없음)
-const MOBILE_ASPECT = "16 / 10"; // 모바일에서 너무 길면 16/10 or 4/3로도 가능
-
-const primaryBtn = {
-    padding: "14px 26px",
-    borderRadius: 999,
-    border: "none",
-    cursor: "pointer",
-    fontSize: 15,
-    fontWeight: 600,
-    background: "linear-gradient(135deg, #ff6b6b, #ff9a8b)",
-    color: "#fff",
-    textDecoration: "none",
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    whiteSpace: "nowrap",
-};
-
-const ghostBtn = {
-    padding: "14px 24px",
-    borderRadius: 999,
-    border: "1px solid rgba(255,255,255,0.3)",
-    background: "transparent",
-    cursor: "pointer",
-    fontSize: 15,
-    color: "#f5f5f5",
-    textDecoration: "none",
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    whiteSpace: "nowrap",
-};
+const DESKTOP_VIDEO_MAX_WIDTH = 820; // 760~900 사이
+const DESKTOP_ASPECT = "16 / 9";
+const MOBILE_ASPECT = "16 / 10";
 
 function useIsMobile(breakpoint = 900) {
-    const [isMobile, setIsMobile] = useState(() => window.innerWidth <= breakpoint);
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth < breakpoint);
 
     useEffect(() => {
-        const onResize = () => setIsMobile(window.innerWidth <= breakpoint);
+        const onResize = () => setIsMobile(window.innerWidth < breakpoint);
         window.addEventListener("resize", onResize);
         return () => window.removeEventListener("resize", onResize);
     }, [breakpoint]);
@@ -51,31 +20,56 @@ function useIsMobile(breakpoint = 900) {
 }
 
 export default function Hero() {
-    // ✅ 모바일 기준을 조금 타이트하게 (폰에서 확실히 1열로 떨어지게)
-    const isMobile = useIsMobile(860);
+    const isMobile = useIsMobile(980);
+
+    const primaryBtn = {
+        padding: isMobile ? "11px 18px" : "14px 26px", // ✅ 모바일에서 약간 축소
+        borderRadius: 999,
+        border: "none",
+        cursor: "pointer",
+        fontSize: isMobile ? 14 : 15, // ✅ 모바일에서 약간 축소
+        fontWeight: 600,
+        background: "linear-gradient(135deg, #ff6b6b, #ff9a8b)",
+        color: "#fff",
+        textDecoration: "none",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        whiteSpace: "nowrap",
+    };
+
+    const ghostBtn = {
+        padding: isMobile ? "11px 16px" : "14px 24px", // ✅ 모바일에서 약간 축소
+        borderRadius: 999,
+        border: "1px solid rgba(255,255,255,0.3)",
+        background: "transparent",
+        cursor: "pointer",
+        fontSize: isMobile ? 14 : 15,
+        color: "#f5f5f5",
+        textDecoration: "none",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        whiteSpace: "nowrap",
+    };
 
     const sectionStyle = {
-        padding: isMobile ? "18px 16px 18px" : "48px 40px 32px",
+        padding: isMobile ? "18px 16px 12px" : "48px 40px 32px",
         display: "grid",
         gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 1.9fr) minmax(0, 1.3fr)",
-        gap: isMobile ? 18 : 56,
+        gap: isMobile ? 16 : 56,
         alignItems: "center",
-
-        // ✅ 가로 드래그(overflow) 1차 방지
         maxWidth: "100%",
-        overflowX: "hidden",
+        overflowX: "hidden", // ✅ Hero 내부에서도 안전장치
+        boxSizing: "border-box",
     };
 
     const leftWrapStyle = {
         position: "relative",
+        overflow: "visible",
         maxWidth: "100%",
-        overflow: "hidden", // ✅ iframe/overlay가 튀어나오는 케이스 차단
     };
 
-    /**
-     * ✅ 모바일은 무조건 100% (가로 꽉)
-     * ✅ 데스크탑은 maxWidth로 살짝 줄여 “우하단에서 줄이는 느낌” 유지
-     */
     const videoOuterStyle = {
         position: "relative",
         width: "100%",
@@ -83,6 +77,7 @@ export default function Hero() {
         borderRadius: 0,
         overflow: "hidden",
         background: "transparent",
+        boxSizing: "border-box",
     };
 
     const videoRatioStyle = {
@@ -113,24 +108,29 @@ export default function Hero() {
 
     const textLayerStyle = {
         position: "absolute",
-        inset: 0,
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
         padding: isMobile ? "16px" : "30px 52px 36px 30px",
         zIndex: 3,
         display: "flex",
         alignItems: "flex-start",
+        boxSizing: "border-box",
     };
 
     const h1Style = {
         fontSize: isMobile ? 30 : 44,
         lineHeight: 1.1,
         marginBottom: isMobile ? 12 : 20,
+        maxWidth: "100%",
     };
 
     const descStyle = {
-        fontSize: isMobile ? 13 : 15,
+        fontSize: isMobile ? 13.5 : 15,
         color: "rgba(255,255,255,0.86)",
-        maxWidth: 520,
-        marginBottom: isMobile ? 14 : 28,
+        maxWidth: isMobile ? "100%" : 520,
+        marginBottom: isMobile ? 16 : 28,
     };
 
     const btnRowStyle = {
@@ -140,39 +140,39 @@ export default function Hero() {
         flexWrap: "wrap",
     };
 
-    /** ✅ 샘플레슨 카드 “덜 튀게” + 모바일에서 가로 꽉 */
+    /** ✅ 샘플레슨 카드 “덜 튀게” + 모바일 풀폭 안정 */
     const sampleOuterStyle = {
-        width: "100%",
-        maxWidth: "100%",
-        borderRadius: 34,
-        padding: isMobile ? 18 : 24,
+        borderRadius: 30,
+        padding: isMobile ? 16 : 24,
         background: "linear-gradient(180deg, rgba(15,15,22,0.78), rgba(6,6,10,0.92))",
         border: "1px solid rgba(255,255,255,0.10)",
         boxShadow: "0 24px 60px rgba(0,0,0,0.55)",
         backdropFilter: "blur(10px)",
         WebkitBackdropFilter: "blur(10px)",
-        overflow: "hidden", // ✅ 그림자/내부요소 튐 방지
+        width: "100%",
+        maxWidth: "100%",
+        boxSizing: "border-box",
     };
 
     const sampleInnerStyle = {
-        borderRadius: 24,
-        padding: isMobile ? "18px" : "22px 24px 22px",
+        borderRadius: 22,
+        padding: isMobile ? "16px" : "22px 24px 22px",
         background: "linear-gradient(135deg, rgba(10,10,16,0.85), rgba(2,2,6,0.95))",
         border: "1px solid rgba(255,255,255,0.10)",
         boxShadow: "0 18px 40px rgba(0,0,0,0.55)",
     };
 
     const staffWrapStyle = {
-        borderRadius: 20,
-        padding: 18,
+        borderRadius: 18,
+        padding: 16,
         background: "linear-gradient(0deg, rgba(15,15,24,0.65), rgba(5,5,10,0.85))",
         boxShadow: "0 0 0 1px rgba(255,255,255,0.06) inset",
-        marginBottom: 18,
+        marginBottom: 16,
     };
 
     const staffStyle = {
         height: 90,
-        borderRadius: 18,
+        borderRadius: 16,
         backgroundColor: "rgba(0,0,0,0.82)",
         backgroundImage:
             "repeating-linear-gradient(0deg, transparent, transparent 13px, rgba(255,255,255,0.14) 13px, rgba(255,255,255,0.14) 14px)",
@@ -197,14 +197,14 @@ export default function Hero() {
                     </div>
 
                     <div style={textLayerStyle}>
-                        <div style={{ maxWidth: 520 }}>
+                        <div style={{ maxWidth: isMobile ? "100%" : 520 }}>
                             <p
                                 style={{
                                     fontSize: 12,
                                     letterSpacing: "0.22em",
                                     textTransform: "uppercase",
                                     color: "rgba(255,255,255,0.7)",
-                                    marginBottom: isMobile ? 10 : 18,
+                                    marginBottom: isMobile ? 12 : 18,
                                 }}
                             >
                                 SEE THE SOUND
@@ -217,8 +217,8 @@ export default function Hero() {
                             </h1>
 
                             <p style={descStyle}>
-                                SEEWAVE turns harmony, rhythm and notation into motion graphics. Learn music through
-                                scores, shapes and color instead of talking heads.
+                                SEEWAVE turns harmony, rhythm and notation into motion graphics. Learn music
+                                through scores, shapes and color instead of talking heads.
                             </p>
 
                             <div style={btnRowStyle}>
@@ -240,7 +240,7 @@ export default function Hero() {
 
             {/* -------- 아래(모바일)/오른쪽(데스크탑) : Sample lesson 카드 -------- */}
             <div style={sampleOuterStyle}>
-                <p style={{ fontSize: 13, marginBottom: 18, color: "rgba(255,255,255,0.9)" }}>
+                <p style={{ fontSize: 13, marginBottom: 16, color: "rgba(255,255,255,0.9)" }}>
                     Sample lesson · Harmony
                 </p>
 
@@ -269,7 +269,8 @@ export default function Hero() {
                                         transform: "translate(-50%, -50%)",
                                         background:
                                             "radial-gradient(circle, rgba(255,224,240,0.95) 0%, rgba(255,134,165,0.75) 55%, rgba(255,80,107,0.55) 100%)",
-                                        boxShadow: "0 0 12px rgba(255,120,150,0.35), 0 0 18px rgba(255,120,150,0.18)",
+                                        boxShadow:
+                                            "0 0 12px rgba(255,120,150,0.35), 0 0 18px rgba(255,120,150,0.18)",
                                     }}
                                 />
                             ))}
@@ -284,10 +285,9 @@ export default function Hero() {
                         style={{
                             display: "flex",
                             justifyContent: "space-between",
-                            gap: 10,
                             fontSize: 11,
                             color: "rgba(255,255,255,0.7)",
-                            flexWrap: "wrap",
+                            gap: 12,
                         }}
                     >
                         <span>Level · Intermediate</span>

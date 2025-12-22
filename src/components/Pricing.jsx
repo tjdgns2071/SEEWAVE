@@ -1,41 +1,21 @@
 import React from "react";
 
-const primaryBtn = {
-    padding: "8px 16px",
-    borderRadius: 999,
-    border: "none",
-    cursor: "pointer",
-    fontSize: 14,
-    fontWeight: 600,
-    background: "linear-gradient(135deg, rgba(255,80,80,1), rgba(255,120,120,1))",
-    color: "#fff",
-};
-
 export default function Pricing() {
+    const isMobile = window.innerWidth < 768;
+
     return (
         <section
             style={{
-                padding: "40px 40px 32px",
+                padding: "40px 20px",
                 display: "grid",
-                gridTemplateColumns: "1.3fr 1.7fr",
-                gap: 28,
-                alignItems: "stretch",
+                gridTemplateColumns: isMobile ? "1fr" : "1.3fr 1.7fr",
+                gap: 24,
             }}
         >
-            <div>
-                <h2 style={{ fontSize: 24, marginBottom: 8 }}>Simple pricing</h2>
-                <p
-                    style={{
-                        fontSize: 14,
-                        color: "rgba(255,255,255,0.7)",
-                        maxWidth: 360,
-                    }}
-                >
-                    One subscription unlocks every course, update and future series.
-                </p>
-            </div>
+            {/* 🔹 플랜 카드 */}
             <div
                 style={{
+                    order: isMobile ? 1 : 2,
                     borderRadius: 20,
                     padding: 20,
                     background:
@@ -50,61 +30,47 @@ export default function Pricing() {
                     <div
                         style={{
                             fontSize: 12,
-                            textTransform: "uppercase",
                             letterSpacing: "0.16em",
-                            color: "rgba(255,255,255,0.7)",
+                            opacity: 0.7,
                             marginBottom: 6,
                         }}
                     >
-                        Creator plan
+                        CREATOR PLAN
                     </div>
                     <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
                         <span style={{ fontSize: 32, fontWeight: 700 }}>$19</span>
-                        <span
-                            style={{
-                                fontSize: 13,
-                                color: "rgba(255,255,255,0.6)",
-                            }}
-                        >
-                            / month
-                        </span>
+                        <span style={{ fontSize: 13, opacity: 0.6 }}>/ month</span>
                     </div>
-                    <ul
-                        style={{
-                            listStyle: "none",
-                            padding: 0,
-                            marginTop: 14,
-                            fontSize: 13,
-                            color: "rgba(255,255,255,0.78)",
-                        }}
-                    >
-                        <li>• Unlimited access to all lessons</li>
-                        <li>• New visual series every month</li>
-                        <li>• Downloadable practice stems</li>
+
+                    <ul style={{ marginTop: 14, fontSize: 13, opacity: 0.8 }}>
+                        <li>Unlimited access to all lessons</li>
+                        <li>New visual series every month</li>
+                        <li>Downloadable practice stems</li>
                     </ul>
                 </div>
-                <div style={{ marginTop: 18 }}>
-                    <button
-                        style={{
-                            ...primaryBtn,
-                            width: "100%",
-                            justifyContent: "center",
-                            display: "inline-flex",
-                            textAlign: "center",
-                        }}
-                    >
-                        Start 7-day free trial
-                    </button>
-                    <p
-                        style={{
-                            fontSize: 11,
-                            color: "rgba(255,255,255,0.6)",
-                            marginTop: 8,
-                        }}
-                    >
-                        Cancel anytime. Student & educator plans coming soon.
-                    </p>
-                </div>
+
+                <button
+                    style={{
+                        marginTop: 18,
+                        width: "100%",
+                        padding: "10px",
+                        borderRadius: 999,
+                        border: "none",
+                        background: "linear-gradient(135deg, #ff6b6b, #ff9a8b)",
+                        color: "#fff",
+                        fontWeight: 600,
+                    }}
+                >
+                    Start 7-day free trial
+                </button>
+            </div>
+
+            {/* 🔹 설명 */}
+            <div style={{ order: isMobile ? 2 : 1 }}>
+                <h2 style={{ fontSize: 24, marginBottom: 8 }}>Simple pricing</h2>
+                <p style={{ fontSize: 14, opacity: 0.7, maxWidth: 360 }}>
+                    One subscription unlocks every course, update and future series.
+                </p>
             </div>
         </section>
     );

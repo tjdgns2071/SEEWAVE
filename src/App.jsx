@@ -28,6 +28,7 @@ const Layout = ({ children }) => (
       background: "radial-gradient(circle at top, #111118, #020206)",
       color: "#f5f5f5",
       fontFamily: "-apple-system, system-ui, BlinkMacSystemFont, sans-serif",
+      overflowX: "hidden",
     }}
   >
     <NavBar />
