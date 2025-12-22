@@ -112,7 +112,7 @@ export default function Hero() {
         left: 0,
         width: "100%",
         height: "100%",
-        padding: isMobile ? "18px 18px 30px" : "30px 52px 36px 30px",
+        padding: isMobile ? "18px 18px 34px" : "30px 52px 36px 30px",
         zIndex: 3,
         display: "flex",
         alignItems: "flex-start",
