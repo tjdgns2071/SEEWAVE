@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 
 /** ✅ 여기 값만 바꾸면 “영상 크기”가 바로 조절됨 */
 const DESKTOP_VIDEO_MAX_WIDTH = 820; // 760~900 사이로 조절 추천
-const DESKTOP_ASPECT = "16 / 9";     // 비율 유지 (잘림 없음)
-const MOBILE_ASPECT = "16 / 10";     // 모바일에서 너무 길면 16/10 or 4/3로도 가능
+const DESKTOP_ASPECT = "16 / 9"; // 비율 유지 (잘림 없음)
+const MOBILE_ASPECT = "16 / 10"; // 모바일에서 너무 길면 16/10 or 4/3로도 가능
 
 const primaryBtn = {
     padding: "14px 26px",
@@ -20,6 +20,7 @@ const primaryBtn = {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
+    whiteSpace: "nowrap",
 };
 
 const ghostBtn = {
@@ -34,13 +35,14 @@ const ghostBtn = {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
+    whiteSpace: "nowrap",
 };
 
 function useIsMobile(breakpoint = 900) {
-    const [isMobile, setIsMobile] = useState(() => window.innerWidth < breakpoint);
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth <= breakpoint);
 
     useEffect(() => {
-        const onResize = () => setIsMobile(window.innerWidth < breakpoint);
+        const onResize = () => setIsMobile(window.innerWidth <= breakpoint);
         window.addEventListener("resize", onResize);
         return () => window.removeEventListener("resize", onResize);
     }, [breakpoint]);
@@ -49,25 +51,31 @@ function useIsMobile(breakpoint = 900) {
 }
 
 export default function Hero() {
-    const isMobile = useIsMobile(980);
+    // ✅ 모바일 기준을 조금 타이트하게 (폰에서 확실히 1열로 떨어지게)
+    const isMobile = useIsMobile(860);
 
     const sectionStyle = {
-        padding: isMobile ? "22px 16px 18px" : "48px 40px 32px",
+        padding: isMobile ? "18px 16px 18px" : "48px 40px 32px",
         display: "grid",
         gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 1.9fr) minmax(0, 1.3fr)",
         gap: isMobile ? 18 : 56,
         alignItems: "center",
+
+        // ✅ 가로 드래그(overflow) 1차 방지
+        maxWidth: "100%",
+        overflowX: "hidden",
     };
 
-    /** ✅ “좌상단은 그대로, 우하단에서 줄이는 느낌”
-     * - 바깥(왼쪽 영역)은 그대로
-     * - 영상 wrapper만 maxWidth로 살짝 줄임 (왼쪽 붙어서 우하단이 줄어든 느낌)
-     */
     const leftWrapStyle = {
         position: "relative",
-        overflow: "visible",
+        maxWidth: "100%",
+        overflow: "hidden", // ✅ iframe/overlay가 튀어나오는 케이스 차단
     };
 
+    /**
+     * ✅ 모바일은 무조건 100% (가로 꽉)
+     * ✅ 데스크탑은 maxWidth로 살짝 줄여 “우하단에서 줄이는 느낌” 유지
+     */
     const videoOuterStyle = {
         position: "relative",
         width: "100%",
@@ -105,38 +113,37 @@ export default function Hero() {
 
     const textLayerStyle = {
         position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        padding: isMobile ? "18px" : "30px 52px 36px 30px",
+        inset: 0,
+        padding: isMobile ? "16px" : "30px 52px 36px 30px",
         zIndex: 3,
         display: "flex",
         alignItems: "flex-start",
     };
 
     const h1Style = {
-        fontSize: isMobile ? 34 : 44,
+        fontSize: isMobile ? 30 : 44,
         lineHeight: 1.1,
-        marginBottom: isMobile ? 14 : 20,
+        marginBottom: isMobile ? 12 : 20,
     };
 
     const descStyle = {
-        fontSize: isMobile ? 14 : 15,
+        fontSize: isMobile ? 13 : 15,
         color: "rgba(255,255,255,0.86)",
         maxWidth: 520,
-        marginBottom: isMobile ? 18 : 28,
+        marginBottom: isMobile ? 14 : 28,
     };
 
     const btnRowStyle = {
         display: "flex",
-        gap: 12,
-        marginBottom: 16,
+        gap: 10,
+        marginBottom: 14,
         flexWrap: "wrap",
     };
 
-    /** ✅ 샘플레슨 카드 “덜 튀게” */
+    /** ✅ 샘플레슨 카드 “덜 튀게” + 모바일에서 가로 꽉 */
     const sampleOuterStyle = {
+        width: "100%",
+        maxWidth: "100%",
         borderRadius: 34,
         padding: isMobile ? 18 : 24,
         background: "linear-gradient(180deg, rgba(15,15,22,0.78), rgba(6,6,10,0.92))",
@@ -144,6 +151,7 @@ export default function Hero() {
         boxShadow: "0 24px 60px rgba(0,0,0,0.55)",
         backdropFilter: "blur(10px)",
         WebkitBackdropFilter: "blur(10px)",
+        overflow: "hidden", // ✅ 그림자/내부요소 튐 방지
     };
 
     const sampleInnerStyle = {
@@ -175,7 +183,7 @@ export default function Hero() {
 
     return (
         <section style={sectionStyle}>
-            {/* -------- 왼쪽 : 배경 영상 + 텍스트 -------- */}
+            {/* -------- 위(모바일)/왼쪽(데스크탑) : 배경 영상 + 텍스트 -------- */}
             <div style={leftWrapStyle}>
                 <div style={videoOuterStyle}>
                     <div style={videoRatioStyle}>
@@ -196,7 +204,7 @@ export default function Hero() {
                                     letterSpacing: "0.22em",
                                     textTransform: "uppercase",
                                     color: "rgba(255,255,255,0.7)",
-                                    marginBottom: 18,
+                                    marginBottom: isMobile ? 10 : 18,
                                 }}
                             >
                                 SEE THE SOUND
@@ -209,8 +217,8 @@ export default function Hero() {
                             </h1>
 
                             <p style={descStyle}>
-                                SEEWAVE turns harmony, rhythm and notation into motion graphics.
-                                Learn music through scores, shapes and color instead of talking heads.
+                                SEEWAVE turns harmony, rhythm and notation into motion graphics. Learn music through
+                                scores, shapes and color instead of talking heads.
                             </p>
 
                             <div style={btnRowStyle}>
@@ -230,7 +238,7 @@ export default function Hero() {
                 </div>
             </div>
 
-            {/* -------- 오른쪽 : Sample lesson 카드 -------- */}
+            {/* -------- 아래(모바일)/오른쪽(데스크탑) : Sample lesson 카드 -------- */}
             <div style={sampleOuterStyle}>
                 <p style={{ fontSize: 13, marginBottom: 18, color: "rgba(255,255,255,0.9)" }}>
                     Sample lesson · Harmony
@@ -261,8 +269,7 @@ export default function Hero() {
                                         transform: "translate(-50%, -50%)",
                                         background:
                                             "radial-gradient(circle, rgba(255,224,240,0.95) 0%, rgba(255,134,165,0.75) 55%, rgba(255,80,107,0.55) 100%)",
-                                        boxShadow:
-                                            "0 0 12px rgba(255,120,150,0.35), 0 0 18px rgba(255,120,150,0.18)",
+                                        boxShadow: "0 0 12px rgba(255,120,150,0.35), 0 0 18px rgba(255,120,150,0.18)",
                                     }}
                                 />
                             ))}
@@ -277,8 +284,10 @@ export default function Hero() {
                         style={{
                             display: "flex",
                             justifyContent: "space-between",
+                            gap: 10,
                             fontSize: 11,
                             color: "rgba(255,255,255,0.7)",
+                            flexWrap: "wrap",
                         }}
                     >
                         <span>Level · Intermediate</span>
