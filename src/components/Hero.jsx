@@ -23,11 +23,12 @@ export default function Hero() {
     const isMobile = useIsMobile(980);
 
     const primaryBtn = {
-        padding: isMobile ? "11px 18px" : "14px 26px", // ✅ 모바일에서 약간 축소
+        padding: isMobile ? "11px 14px 9px 18px" : "14px 26px",
+        // top right bottom left
         borderRadius: 999,
         border: "none",
         cursor: "pointer",
-        fontSize: isMobile ? 14 : 15, // ✅ 모바일에서 약간 축소
+        fontSize: isMobile ? 13 : 15,
         fontWeight: 600,
         background: "linear-gradient(135deg, #ff6b6b, #ff9a8b)",
         color: "#fff",
@@ -39,12 +40,13 @@ export default function Hero() {
     };
 
     const ghostBtn = {
-        padding: isMobile ? "11px 16px" : "14px 24px", // ✅ 모바일에서 약간 축소
+        padding: isMobile ? "11px 14px 9px 18px" : "14px 24px",
+        // top right bottom left
         borderRadius: 999,
         border: "1px solid rgba(255,255,255,0.3)",
         background: "transparent",
         cursor: "pointer",
-        fontSize: isMobile ? 14 : 15,
+        fontSize: isMobile ? 13 : 15,
         color: "#f5f5f5",
         textDecoration: "none",
         display: "inline-flex",
