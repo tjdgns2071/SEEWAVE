@@ -23,29 +23,30 @@ export default function Hero() {
     const isMobile = useIsMobile(980);
 
     const primaryBtn = {
-        padding: isMobile ? "10px 10px 6px 18px" : "14px 26px",
-        //            top  right bottom left
+        padding: isMobile ? "9px 14px" : "14px 26px",
         borderRadius: 999,
         border: "none",
         cursor: "pointer",
-        fontSize: isMobile ? 12.5 : 15,
+        fontSize: isMobile ? 13 : 15,
         fontWeight: 600,
+        lineHeight: 1,              // ✅ 세로 중심 느낌
         background: "linear-gradient(135deg, #ff6b6b, #ff9a8b)",
         color: "#fff",
         textDecoration: "none",
         display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
+        alignItems: "center",        // ✅ 세로 중앙
+        justifyContent: "center",    // ✅ 가로 중앙
         whiteSpace: "nowrap",
     };
 
     const ghostBtn = {
-        padding: isMobile ? "10px 10px 6px 18px" : "14px 24px",
+        padding: isMobile ? "9px 14px" : "14px 24px",
         borderRadius: 999,
         border: "1px solid rgba(255,255,255,0.3)",
         background: "transparent",
         cursor: "pointer",
-        fontSize: isMobile ? 12.5 : 15,
+        fontSize: isMobile ? 13 : 15,
+        lineHeight: 1,              // ✅
         color: "#f5f5f5",
         textDecoration: "none",
         display: "inline-flex",
