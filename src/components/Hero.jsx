@@ -23,12 +23,12 @@ export default function Hero() {
     const isMobile = useIsMobile(980);
 
     const primaryBtn = {
-        padding: isMobile ? "11px 14px 9px 18px" : "14px 26px",
-        // top right bottom left
+        padding: isMobile ? "10px 10px 6px 18px" : "14px 26px",
+        //            top  right bottom left
         borderRadius: 999,
         border: "none",
         cursor: "pointer",
-        fontSize: isMobile ? 13 : 15,
+        fontSize: isMobile ? 12.5 : 15,
         fontWeight: 600,
         background: "linear-gradient(135deg, #ff6b6b, #ff9a8b)",
         color: "#fff",
@@ -40,13 +40,12 @@ export default function Hero() {
     };
 
     const ghostBtn = {
-        padding: isMobile ? "11px 14px 9px 18px" : "14px 24px",
-        // top right bottom left
+        padding: isMobile ? "10px 10px 6px 18px" : "14px 24px",
         borderRadius: 999,
         border: "1px solid rgba(255,255,255,0.3)",
         background: "transparent",
         cursor: "pointer",
-        fontSize: isMobile ? 13 : 15,
+        fontSize: isMobile ? 12.5 : 15,
         color: "#f5f5f5",
         textDecoration: "none",
         display: "inline-flex",
