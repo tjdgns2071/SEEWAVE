@@ -231,9 +231,11 @@ export default function Hero() {
                                 </Link>
                             </div>
 
-                            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.7)" }}>
-                                No narration overload · Visual-first · New lessons every week
-                            </p>
+                            {!isMobile && (
+                                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.7)" }}>
+                                    No narration overload · Visual-first · New lessons every week
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>
