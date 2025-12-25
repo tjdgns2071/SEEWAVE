@@ -142,26 +142,44 @@ export default function Hero() {
         flexWrap: "wrap",
     };
 
-    /** ✅ 샘플레슨 카드 “덜 튀게” + 모바일 풀폭 안정 */
     const sampleOuterStyle = {
         borderRadius: 30,
         padding: isMobile ? 16 : 24,
-        background: "linear-gradient(180deg, rgba(15,15,22,0.78), rgba(6,6,10,0.92))",
-        border: "1px solid rgba(255,255,255,0.10)",
-        boxShadow: "0 24px 60px rgba(0,0,0,0.55)",
+
+        background:
+            "linear-gradient(180deg, rgba(22,22,30,0.72) 0%, rgba(10,10,16,0.88) 55%, rgba(6,6,10,0.92) 100%)",
+
+        // 🔥 여기 추가 (상단 핑크 하이라이트)
+        backgroundImage:
+            "linear-gradient(180deg, rgba(255,120,150,0.05), transparent 38%)",
+
+        border: "1px solid rgba(255,120,150,0.18)",
+
+        boxShadow: `
+    0 28px 70px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(255,120,150,0.06) inset,
+    0 0 24px rgba(255,120,150,0.08)
+  `,
+
         backdropFilter: "blur(10px)",
         WebkitBackdropFilter: "blur(10px)",
         width: "100%",
         maxWidth: "100%",
         boxSizing: "border-box",
+
+        marginLeft: isMobile ? 0 : -32,
     };
 
     const sampleInnerStyle = {
         borderRadius: 22,
         padding: isMobile ? "16px" : "22px 24px 22px",
-        background: "linear-gradient(135deg, rgba(10,10,16,0.85), rgba(2,2,6,0.95))",
+
+        // ✅ 내부는 “무대 조명” 느낌으로 살짝 밝게
+        background:
+            "linear-gradient(135deg, rgba(18,18,26,0.72) 0%, rgba(6,6,12,0.92) 60%, rgba(2,2,6,0.96) 100%)",
+
         border: "1px solid rgba(255,255,255,0.10)",
-        boxShadow: "0 18px 40px rgba(0,0,0,0.55)",
+        boxShadow: "0 18px 44px rgba(0,0,0,0.55)",
     };
 
     const staffWrapStyle = {
