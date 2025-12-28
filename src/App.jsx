@@ -1,3 +1,4 @@
+import CategoryPage from "./pages/CategoryPage";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import React, { useState } from "react";
@@ -394,6 +395,7 @@ export default function App() {
       <Route path="/faq" element={<FaqPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
+      <Route path="/category/:slug" element={<CategoryPage />} />
     </Routes>
   );
 }
@@ -403,12 +405,12 @@ export default function App() {
 /* -------------------------------------------------------------------------- */
 
 const HOME_CATEGORIES = [
-  { title: "Visual Theory", image: visualTheoryImg },
-  { title: "Rhythm in Motion", image: rhythmImg },
-  { title: "Harmony Flow", image: harmonyImg },
-  { title: "Piano Roll Lab", image: pianoImg },
-  { title: "Composition", image: compositionImg },
-  { title: "Melody Lines", image: melodyImg },
+  { title: "Visual Theory", image: visualTheoryImg, slug: "visual-theory" },
+  { title: "Rhythm in Motion", image: rhythmImg, slug: "rhythm-in-motion" },
+  { title: "Harmony Flow", image: harmonyImg, slug: "harmony-flow" },
+  { title: "Piano Roll Lab", image: pianoImg, slug: "piano-roll-lab" },
+  { title: "Composition", image: compositionImg, slug: "composition" },
+  { title: "Melody Lines", image: melodyImg, slug: "melody-lines" },
 ];
 
 const FEATURED_ITEMS = [

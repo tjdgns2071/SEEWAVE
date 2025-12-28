@@ -1,6 +1,9 @@
 import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function CategoryRow({ title, items }) {
+    const navigate = useNavigate();
+
     return (
         <section style={{ padding: "16px 40px" }}>
             <div
@@ -12,8 +15,11 @@ export default function CategoryRow({ title, items }) {
                 }}
             >
                 <h2 style={{ fontSize: 18 }}>{title}</h2>
+
+                {/* ✅ 전체 코스 페이지로 이동 (원하면 /courses 말고 바꿔도 됨) */}
                 <button
                     className="hover-scale"
+                    onClick={() => navigate("/courses")}
                     style={{
                         fontSize: 13,
                         color: "#fff",
@@ -31,6 +37,7 @@ export default function CategoryRow({ title, items }) {
                     See all courses <span>→</span>
                 </button>
             </div>
+
             <div
                 style={{
                     display: "flex",
@@ -40,45 +47,39 @@ export default function CategoryRow({ title, items }) {
                 }}
             >
                 {items.map((item, i) => (
-                    <div
-                        className="hover-lift"
+                    <Link
                         key={i}
-                        style={{
-                            minWidth: 220,
-                            borderRadius: 16,
-                            background: "linear-gradient(145deg, #18181f, #101017)",
-                            border: "1px solid rgba(255,255,255,0.06)",
-                            padding: 12,
-                            cursor: "pointer",
-                        }}
+                        to={`/category/${item.slug}`}
+                        style={{ textDecoration: "none", color: "inherit" }}
                     >
                         <div
+                            className="hover-lift"
                             style={{
-                                height: 110,
-                                borderRadius: 12,
-                                background: `url(${item.image}) center/cover no-repeat`,
-                                marginBottom: 10,
-                                boxShadow: "inset 0 0 20px rgba(0,0,0,0.5)",
-                            }}
-                        />
-                        <div
-                            style={{
-                                fontSize: 13,
-                                fontWeight: 600,
-                                marginBottom: 4,
+                                minWidth: 220,
+                                borderRadius: 16,
+                                background: "linear-gradient(145deg, #18181f, #101017)",
+                                border: "1px solid rgba(255,255,255,0.06)",
+                                padding: 12,
+                                cursor: "pointer",
                             }}
                         >
-                            {item.title}
+                            <div
+                                style={{
+                                    height: 110,
+                                    borderRadius: 12,
+                                    background: `url(${item.image}) center/cover no-repeat`,
+                                    marginBottom: 10,
+                                    boxShadow: "inset 0 0 20px rgba(0,0,0,0.5)",
+                                }}
+                            />
+                            <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>
+                                {item.title}
+                            </div>
+                            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)" }}>
+                                Motion-score breakdowns, no narration overload.
+                            </div>
                         </div>
-                        <div
-                            style={{
-                                fontSize: 11,
-                                color: "rgba(255,255,255,0.6)",
-                            }}
-                        >
-                            Motion-score breakdowns, no narration overload.
-                        </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
         </section>
