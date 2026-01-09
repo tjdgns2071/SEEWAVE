@@ -28,3 +28,11 @@ import { onAuthStateChanged } from "firebase/auth";
 export function subscribeToAuth(callback) {
     return onAuthStateChanged(auth, callback);
 }
+
+import { getFunctions, httpsCallable } from "firebase/functions";
+
+export const functions = getFunctions();
+export const createCheckoutSession = httpsCallable(
+    functions,
+    "createCheckoutSession"
+);
