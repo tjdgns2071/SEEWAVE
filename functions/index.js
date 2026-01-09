@@ -1,43 +1,37 @@
 /**
- * Firebase Functions (v2) + Stripe Checkout
+ * SEEWAVE – Stripe + Firebase Functions (2nd gen)
+ * - createCheckoutSession
+ * - stripeWebhook
  */
 
-const { setGlobalOptions } = require("firebase-functions");
-const { onCall } = require("firebase-functions/v2/https");
+const { onCall, onRequest } = require("firebase-functions/v2/https");
+const { setGlobalOptions } = require("firebase-functions/v2");
 const { defineSecret } = require("firebase-functions/params");
-const logger = require("firebase-functions/logger");
-
 const admin = require("firebase-admin");
 const Stripe = require("stripe");
+const logger = require("firebase-functions/logger");
 
-// 🔹 글로벌 옵션
-setGlobalOptions({ maxInstances: 10 });
+setGlobalOptions({ region: "us-central1", maxInstances: 10 });
 
-// 🔹 Firebase Admin 초기화
-admin.initializeApp();
-
-// 🔹 Stripe Secret (신형 방식)
+// 🔐 Secrets
 const STRIPE_SECRET_KEY = defineSecret("STRIPE_SECRET_KEY");
+const STRIPE_WEBHOOK_SECRET = defineSecret("STRIPE_WEBHOOK_SECRET");
 
-// 🔹 Callable Function
+admin.initializeApp();
+const db = admin.firestore();
+
+/* ------------------------------------------------------------------ */
+/* 1️⃣ Checkout Session 생성 (프론트에서 호출) */
+/* ------------------------------------------------------------------ */
 exports.createCheckoutSession = onCall(
     { secrets: [STRIPE_SECRET_KEY] },
     async (request) => {
         const { auth, data } = request;
+        if (!auth) throw new Error("Not authenticated");
 
-        if (!auth) {
-            throw new Error("Not authenticated");
-        }
-
-        const { lookupKey } = data;
-        if (!lookupKey) {
-            throw new Error("lookupKey is required");
-        }
-
-        // ✅ Stripe 인스턴스 생성 (여기서 secret 사용)
         const stripe = new Stripe(STRIPE_SECRET_KEY.value());
+        const { lookupKey } = data;
 
-        // 🔹 lookup_key로 price 찾기
         const prices = await stripe.prices.list({
             lookup_keys: [lookupKey],
             expand: ["data.product"],
@@ -47,7 +41,6 @@ exports.createCheckoutSession = onCall(
             throw new Error("Price not found");
         }
 
-        // 🔹 Checkout Session 생성
         const session = await stripe.checkout.sessions.create({
             mode: "subscription",
             customer_email: auth.token.email,
@@ -61,8 +54,51 @@ exports.createCheckoutSession = onCall(
             cancel_url: "http://localhost:5173/pricing",
         });
 
-        return {
-            url: session.url,
-        };
+        return { url: session.url };
+    }
+);
+
+/* ------------------------------------------------------------------ */
+/* 2️⃣ Stripe Webhook (결제 성공 → 구독 저장) */
+/* ------------------------------------------------------------------ */
+exports.stripeWebhook = onRequest(
+    {
+        secrets: [STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET],
+    },
+    async (req, res) => {
+        const stripe = new Stripe(STRIPE_SECRET_KEY.value());
+
+        let event;
+        try {
+            event = stripe.webhooks.constructEvent(
+                req.rawBody,
+                req.headers["stripe-signature"],
+                STRIPE_WEBHOOK_SECRET.value()
+            );
+        } catch (err) {
+            logger.error("Webhook signature verification failed", err);
+            return res.status(400).send(`Webhook Error: ${err.message}`);
+        }
+
+        // ✅ 결제 완료 이벤트만 처리
+        if (event.type === "checkout.session.completed") {
+            const session = event.data.object;
+
+            const email = session.customer_email;
+            const subscriptionId = session.subscription;
+
+            // Firestore 저장
+            await db.collection("subscriptions").doc(email).set(
+                {
+                    email,
+                    subscriptionId,
+                    status: "active",
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                },
+                { merge: true }
+            );
+        }
+
+        res.json({ received: true });
     }
 );
