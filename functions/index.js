@@ -23,6 +23,50 @@ const db = admin.firestore();
 /* ------------------------------------------------------------------ */
 /* 1️⃣ Checkout Session 생성 (프론트에서 호출) */
 /* ------------------------------------------------------------------ */
+exports.createCheckoutSession = onCall(
+    {
+        secrets: [STRIPE_SECRET_KEY],
+    },
+    async (request) => {
+        const { auth, data } = request;
+
+        if (!auth) {
+            throw new Error("Not authenticated");
+        }
+
+        const stripe = new Stripe(STRIPE_SECRET_KEY.value());
+
+        const { lookupKey } = data;
+
+        const prices = await stripe.prices.list({
+            lookup_keys: [lookupKey],
+            expand: ["data.product"],
+        });
+
+        if (!prices.data.length) {
+            throw new Error("Price not found");
+        }
+
+        const session = await stripe.checkout.sessions.create({
+            mode: "subscription",
+            customer_email: auth.token.email,
+            line_items: [
+                {
+                    price: prices.data[0].id,
+                    quantity: 1,
+                },
+            ],
+            success_url: "http://localhost:5173/start",
+            cancel_url: "http://localhost:5173/pricing",
+        });
+
+        return { url: session.url };
+    }
+);
+
+/* ------------------------------------------------------------------ */
+/* 1️⃣ Checkout Session 생성 (프론트에서 호출) */
+/* ------------------------------------------------------------------ */
 exports.stripeWebhook = onRequest(
     {
         secrets: [STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET],
