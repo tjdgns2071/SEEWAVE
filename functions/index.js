@@ -59,7 +59,7 @@ exports.createCheckoutSession = onCall(
 );
 
 /* ------------------------------------------------------------------ */
-/* 2️⃣ Stripe Webhook → users 컬렉션 업데이트 */
+/* 2️⃣ Stripe Webhook (결제 성공 → users + subscriptions 저장) */
 /* ------------------------------------------------------------------ */
 exports.stripeWebhook = onRequest(
     {
@@ -84,37 +84,31 @@ exports.stripeWebhook = onRequest(
             const session = event.data.object;
 
             const email = session.customer_email;
-            const stripeCustomerId = session.customer;
             const subscriptionId = session.subscription;
-            const priceId = session.metadata?.priceId || null;
+            const customerId = session.customer;
 
-            // 🔍 email로 users 문서 찾기
-            const userSnap = await db
-                .collection("users")
-                .where("email", "==", email)
-                .limit(1)
-                .get();
-
-            if (userSnap.empty) {
-                logger.warn("No user found for email:", email);
-                return res.json({ received: true });
-            }
-
-            const userDoc = userSnap.docs[0];
-
-            // ✅ users/{uid} 업데이트
-            await userDoc.ref.set(
+            // 🔹 subscriptions 컬렉션
+            await db.collection("subscriptions").doc(email).set(
                 {
-                    stripeCustomerId,
+                    email,
                     subscriptionId,
-                    priceId,
+                    customerId,
+                    status: "active",
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                },
+                { merge: true }
+            );
+
+            // 🔹 users 컬렉션 (🔥 이게 핵심)
+            await db.collection("users").doc(email).set(
+                {
+                    email,
+                    stripeCustomerId: customerId,
                     subscriptionStatus: "active",
                     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
                 },
                 { merge: true }
             );
-
-            logger.info("Subscription activated for", email);
         }
 
         res.json({ received: true });
