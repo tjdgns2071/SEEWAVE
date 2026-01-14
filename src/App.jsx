@@ -1,3 +1,8 @@
+import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "./firebase"; // 경로 다르면 맞게 수정
+
 import CategoryPage from "./pages/CategoryPage";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -386,6 +391,25 @@ const FaqItem = ({ item, isOpen, onToggle }) => (
 /* -------------------------------------------------------------------------- */
 
 export default function App() {
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) return;
+
+      const userRef = doc(db, "users", user.uid);
+      const snap = await getDoc(userRef);
+
+      if (!snap.exists()) {
+        await setDoc(userRef, {
+          uid: user.uid,
+          email: user.email,
+          createdAt: serverTimestamp(),
+        });
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
