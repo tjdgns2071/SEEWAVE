@@ -59,7 +59,7 @@ exports.createCheckoutSession = onCall(
 );
 
 /* ------------------------------------------------------------------ */
-/* 2️⃣ Stripe Webhook (결제 성공 → 구독 저장) */
+/* 2️⃣ Stripe Webhook → users 컬렉션 업데이트 */
 /* ------------------------------------------------------------------ */
 exports.stripeWebhook = onRequest(
     {
@@ -80,23 +80,41 @@ exports.stripeWebhook = onRequest(
             return res.status(400).send(`Webhook Error: ${err.message}`);
         }
 
-        // ✅ 결제 완료 이벤트만 처리
         if (event.type === "checkout.session.completed") {
             const session = event.data.object;
 
             const email = session.customer_email;
+            const stripeCustomerId = session.customer;
             const subscriptionId = session.subscription;
+            const priceId = session.metadata?.priceId || null;
 
-            // Firestore 저장
-            await db.collection("subscriptions").doc(email).set(
+            // 🔍 email로 users 문서 찾기
+            const userSnap = await db
+                .collection("users")
+                .where("email", "==", email)
+                .limit(1)
+                .get();
+
+            if (userSnap.empty) {
+                logger.warn("No user found for email:", email);
+                return res.json({ received: true });
+            }
+
+            const userDoc = userSnap.docs[0];
+
+            // ✅ users/{uid} 업데이트
+            await userDoc.ref.set(
                 {
-                    email,
+                    stripeCustomerId,
                     subscriptionId,
-                    status: "active",
-                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    priceId,
+                    subscriptionStatus: "active",
+                    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
                 },
                 { merge: true }
             );
+
+            logger.info("Subscription activated for", email);
         }
 
         res.json({ received: true });
