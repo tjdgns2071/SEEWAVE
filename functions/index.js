@@ -3,7 +3,7 @@
  * - createCheckoutSession
  * - stripeWebhook
  */
-
+const functions = require("firebase-functions"); // 👈 추가 (1st gen)
 const { onCall, onRequest } = require("firebase-functions/v2/https");
 const { setGlobalOptions } = require("firebase-functions/v2");
 const { defineSecret } = require("firebase-functions/params");
