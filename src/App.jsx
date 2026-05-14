@@ -1,66 +1,32 @@
-import React, { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
-import { auth, db } from "./firebase";
+import Layout from "./components/Layout";
 
+import HomePage from "./pages/HomePage";
 import CategoryPage from "./pages/CategoryPage";
+import CoursesPage from "./pages/CoursesPage";
+import PricingPage from "./pages/PricingPage";
+import FaqPage from "./pages/FaqPage";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
-
-import NavBar from "./components/Navbar";
-import Hero from "./components/Hero";
-import CategoryRow from "./components/Category";
-import Pricing from "./components/Pricing";
-import FAQ from "./components/FAQ";
-import Footer from "./components/Footer";
-
-// pages
-function HomePage() {
-  return (
-    <>
-      <Hero />
-      <CategoryRow title="Browse by Category" items={HOME_CATEGORIES} />
-      <Pricing />
-      <FAQ />
-    </>
-  );
-}
+import StartWatchingPage from "./pages/StartWatchingPage";
+import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import PaymentCancelPage from "./pages/PaymentCancelPage";
 
 export default function App() {
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user) return;
-
-      const userRef = doc(db, "users", user.uid);
-      const snap = await getDoc(userRef);
-
-      if (!snap.exists()) {
-        await setDoc(userRef, {
-          uid: user.uid,
-          email: user.email,
-          createdAt: serverTimestamp(),
-        });
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
   return (
-    <>
-      <NavBar />
+    <Layout>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/start" element={<StartWatchingPage />} />
+        <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/courses" element={<CoursesPage />} />
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/category/:slug" element={<CategoryPage />} />
+        <Route path="/start" element={<StartWatchingPage />} />
+        <Route path="/payment-success" element={<PaymentSuccessPage />} />
+        <Route path="/payment-cancel" element={<PaymentCancelPage />} />
       </Routes>
-      <Footer />
-    </>
+    </Layout>
   );
 }

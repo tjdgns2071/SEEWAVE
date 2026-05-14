@@ -3,7 +3,8 @@
  * - createCheckoutSession
  * - stripeWebhook
  */
-const functions = require("firebase-functions"); // 👈 추가 (1st gen)
+
+const functions = require("firebase-functions");
 const { onCall, onRequest } = require("firebase-functions/v2/https");
 const { setGlobalOptions } = require("firebase-functions/v2");
 const { defineSecret } = require("firebase-functions/params");
@@ -13,16 +14,13 @@ const logger = require("firebase-functions/logger");
 
 setGlobalOptions({ region: "us-central1", maxInstances: 10 });
 
-// 🔐 Secrets
+// Secrets
 const STRIPE_SECRET_KEY = defineSecret("STRIPE_SECRET_KEY");
 const STRIPE_WEBHOOK_SECRET = defineSecret("STRIPE_WEBHOOK_SECRET");
 
 admin.initializeApp();
 const db = admin.firestore();
 
-/* ------------------------------------------------------------------ */
-/* 1️⃣ Checkout Session 생성 (프론트에서 호출) */
-/* ------------------------------------------------------------------ */
 exports.createCheckoutSession = onCall(
     {
         secrets: [STRIPE_SECRET_KEY],
@@ -36,7 +34,7 @@ exports.createCheckoutSession = onCall(
 
         const stripe = new Stripe(STRIPE_SECRET_KEY.value());
 
-        const { lookupKey } = data;
+        const { lookupKey, plan, categories } = data;
 
         const prices = await stripe.prices.list({
             lookup_keys: [lookupKey],
@@ -58,20 +56,22 @@ exports.createCheckoutSession = onCall(
             ],
             success_url: "http://localhost:5173/start",
             cancel_url: "http://localhost:5173/pricing",
+            metadata: {
+                email: auth.token.email,
+                plan: plan || "category",
+                categories: JSON.stringify(categories || []),
+            },
         });
 
         return { url: session.url };
     }
 );
 
-/* ------------------------------------------------------------------ */
-/* 1️⃣ Checkout Session 생성 (프론트에서 호출) */
-/* ------------------------------------------------------------------ */
 exports.stripeWebhook = onRequest(
     {
         secrets: [STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET],
         cors: false,
-        bodyParser: false, // ⭐ 핵심
+        bodyParser: false,
     },
     async (req, res) => {
         const stripe = new Stripe(STRIPE_SECRET_KEY.value());
@@ -85,12 +85,16 @@ exports.stripeWebhook = onRequest(
                 STRIPE_WEBHOOK_SECRET.value()
             );
         } catch (err) {
-            logger.error("❌ Webhook signature verification failed", err);
+            logger.error("Webhook signature verification failed", err);
             return res.status(400).send(`Webhook Error: ${err.message}`);
         }
 
         if (event.type === "checkout.session.completed") {
             const session = event.data.object;
+
+            const categories = session.metadata?.categories
+                ? JSON.parse(session.metadata.categories)
+                : [];
 
             await db
                 .collection("subscriptions")
@@ -99,6 +103,17 @@ exports.stripeWebhook = onRequest(
                     email: session.customer_email,
                     subscriptionId: session.subscription,
                     status: "active",
+
+                    plan: "all_access",
+                    categories: [
+                        "visual_theory",
+                        "rhythm_in_motion",
+                        "harmony_flow",
+                        "piano_roll_lab",
+                        "composition",
+                        "melody_lines"
+                    ],
+
                     createdAt: admin.firestore.FieldValue.serverTimestamp(),
                 });
         }

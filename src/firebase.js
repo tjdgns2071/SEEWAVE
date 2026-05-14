@@ -1,8 +1,8 @@
 // src/firebase.js
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-// 필요하면 나중에 analytics도 다시 쓸 수 있음
-// import { getAnalytics } from "firebase/analytics";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDAtoMvuOEmSY1q6HbWdUKCpiLJBMigAzY",
@@ -14,24 +14,21 @@ const firebaseConfig = {
     measurementId: "G-LBTB35769Z"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
-// ✅ 우리가 로그인/회원가입에서 쓸 auth 객체
+// Auth
 export const auth = getAuth(app);
-
-// 나중에 필요하면 다시 활성화
-// const analytics = getAnalytics(app);
-
-import { onAuthStateChanged } from "firebase/auth";
 
 export function subscribeToAuth(callback) {
     return onAuthStateChanged(auth, callback);
 }
 
-import { getFunctions, httpsCallable } from "firebase/functions";
+// Firestore
+export const db = getFirestore(app);
 
-export const functions = getFunctions();
+// Functions
+export const functions = getFunctions(app, "us-central1");
+
 export const createCheckoutSession = httpsCallable(
     functions,
     "createCheckoutSession"

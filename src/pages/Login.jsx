@@ -1,11 +1,12 @@
 // src/pages/Login.jsx
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 
 export default function Login() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,13 +23,26 @@ export default function Login() {
         try {
             await signInWithEmailAndPassword(auth, email, password);
             alert("로그인 성공!");
-            // 로그인 성공 후 어디로 보낼지 결정
-            navigate("/"); // 또는 "/" 로 바꿔도 됨
+
+            // ✅ redirect 처리: /login?redirect=/start 같은 형태 지원
+            const params = new URLSearchParams(location.search);
+            const redirect = params.get("redirect");
+
+            // 안전장치: 외부 URL 같은 건 차단, 내부 경로만 허용
+            const safeRedirect =
+                redirect && redirect.startsWith("/") && !redirect.startsWith("//")
+                    ? redirect
+                    : "/";
+
+            navigate(safeRedirect, { replace: true });
         } catch (error) {
             console.error(error);
             let message = "로그인에 실패했습니다.";
 
-            if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") {
+            if (
+                error.code === "auth/invalid-credential" ||
+                error.code === "auth/wrong-password"
+            ) {
                 message = "이메일 또는 비밀번호가 올바르지 않습니다.";
             } else if (error.code === "auth/user-not-found") {
                 message = "해당 이메일의 계정이 없습니다.";
@@ -85,10 +99,7 @@ export default function Login() {
                             margin: 0,
                         }}
                     >
-                        Log in to{" "}
-                        <span style={{ color: "#ff9a8b" }}>
-                            SEEWAVE
-                        </span>
+                        Log in to <span style={{ color: "#ff9a8b" }}>SEEWAVE</span>
                     </h1>
                     <p
                         style={{
