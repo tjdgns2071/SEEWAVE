@@ -2,7 +2,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 
 const PAYPAL_CLIENT_ID =
     "AQyDJNBSwqwn-z_IeAs6MyEtyE6kGf6i3ETIMJDj9DofboswMVfdpUvmwRwHIbqbbDXkxzh_7PX_JHz_";
@@ -83,6 +84,39 @@ export default function PricingPage() {
     const navigate = useNavigate();
     const [checkingAuth, setCheckingAuth] = useState(true);
     const [openIdx, setOpenIdx] = useState(0);
+    const handleTestUnlockAllAccess = async () => {
+        const user = auth.currentUser;
+
+        if (!user) {
+            navigate("/login?redirect=/pricing");
+            return;
+        }
+
+        await setDoc(
+            doc(db, "subscriptions", user.uid),
+            {
+                uid: user.uid,
+                email: user.email,
+                status: "active",
+                planType: "all_access",
+                all_access: true,
+                categories: [
+                    "visual-theory",
+                    "rhythm-in-motion",
+                    "harmony-flow",
+                    "piano-roll-lab",
+                    "composition",
+                    "melody-lines",
+                ],
+                testMode: true,
+                updatedAt: serverTimestamp(),
+            },
+            { merge: true }
+        );
+
+        alert("TEST All Access unlocked.");
+        navigate("/courses");
+    };
 
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, (user) => {
@@ -369,6 +403,24 @@ export default function PricingPage() {
                             </ul>
 
                             <PayPalSubscribeButton planId={p.planId} planName={p.name} />
+                            {p.primary && (
+                                <button
+                                    onClick={handleTestUnlockAllAccess}
+                                    style={{
+                                        marginTop: 12,
+                                        width: "100%",
+                                        padding: "12px 16px",
+                                        borderRadius: 999,
+                                        border: "1px solid rgba(255,255,255,0.22)",
+                                        background: "transparent",
+                                        color: "#fff",
+                                        fontWeight: 700,
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    TEST Unlock All Access
+                                </button>
+                            )}
                         </div>
                     ))}
                 </div>
