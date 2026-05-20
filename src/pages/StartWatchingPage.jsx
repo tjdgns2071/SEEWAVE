@@ -1,40 +1,110 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
-import Layout from "../components/Layout";
+import { doc, getDoc } from "firebase/firestore";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { auth, db } from "../firebase";
+
+const CATEGORY_LABELS = {
+    "visual-theory": "Visual Theory",
+    "rhythm-in-motion": "Rhythm in Motion",
+    "harmony-flow": "Harmony Flow",
+    "piano-roll-lab": "Piano Roll Lab",
+    composition: "Composition",
+    "melody-lines": "Melody Lines",
+};
 
 export default function StartWatchingPage() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const [status, setStatus] = useState("Checking access...");
+
+    const category = searchParams.get("category");
+    const categoryTitle = CATEGORY_LABELS[category] || "SEEWAVE";
 
     useEffect(() => {
-        const unsub = onAuthStateChanged(auth, (user) => {
+        const unsub = onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                navigate("/login?redirect=/start", { replace: true });
+                navigate(`/login?redirect=/start?category=${category || ""}`, {
+                    replace: true,
+                });
                 return;
             }
 
-            // ✅ 로그인 됐으면 코스 선택 화면으로 이동
-            navigate("/courses", { replace: true });
+            if (!category) {
+                navigate("/courses", { replace: true });
+                return;
+            }
+
+            try {
+                const ref = doc(db, "subscriptions", user.uid);
+                const snap = await getDoc(ref);
+
+                if (!snap.exists()) {
+                    navigate("/pricing", { replace: true });
+                    return;
+                }
+
+                const data = snap.data();
+
+                const active = data.status === "active";
+                const allAccess = data.all_access === true || data.planType === "all_access";
+                const categoryAccess = data.categories?.includes(category) === true;
+
+                if (!active || (!allAccess && !categoryAccess)) {
+                    navigate("/pricing", { replace: true });
+                    return;
+                }
+
+                setStatus("Access granted");
+            } catch (error) {
+                console.error("Start watching access error:", error);
+                navigate("/pricing", { replace: true });
+            }
         });
 
         return () => unsub();
-    }, [navigate]);
+    }, [navigate, category]);
 
     return (
-        <Layout>
-            <div
+        <main
+            style={{
+                maxWidth: 1120,
+                margin: "0 auto",
+                padding: "90px 40px 70px",
+            }}
+        >
+            <p
                 style={{
-                    minHeight: "60vh",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 16,
-                    opacity: 0.85,
+                    letterSpacing: "0.16em",
+                    textTransform: "uppercase",
+                    opacity: 0.6,
+                    fontSize: 12,
                 }}
             >
-                Loading…
-            </div>
-        </Layout>
+                Now watching
+            </p>
+
+            <h1 style={{ fontSize: 42, margin: "0 0 14px" }}>
+                {categoryTitle}
+            </h1>
+
+            <p style={{ opacity: 0.72, marginBottom: 28 }}>{status}</p>
+
+            <section
+                style={{
+                    borderRadius: 26,
+                    padding: 30,
+                    minHeight: 360,
+                    background: "rgba(255,255,255,0.035)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    boxShadow: "0 24px 70px rgba(0,0,0,0.5)",
+                }}
+            >
+                <h2 style={{ marginTop: 0 }}>Lesson player coming next</h2>
+                <p style={{ opacity: 0.7 }}>
+                    This is where the {categoryTitle} videos will appear.
+                </p>
+            </section>
+        </main>
     );
 }

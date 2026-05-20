@@ -139,12 +139,17 @@ export default function CategoryPage() {
                                     onClick={() => {
                                         if (canAccess === null) return;
 
+                                        if (!auth.currentUser) {
+                                            navigate(`/login?redirect=/pricing`);
+                                            return;
+                                        }
+
                                         if (!canAccess) {
                                             navigate("/pricing");
                                             return;
                                         }
 
-                                        alert("Lesson player will be connected next.");
+                                        navigate(`/start?category=${slug}`);
                                     }}
                                     style={mainButton}
                                 >

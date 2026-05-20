@@ -1,6 +1,8 @@
 // src/pages/PricingPage.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
 
 const PAYPAL_CLIENT_ID =
     "AQyDJNBSwqwn-z_IeAs6MyEtyE6kGf6i3ETIMJDj9DofboswMVfdpUvmwRwHIbqbbDXkxzh_7PX_JHz_";
@@ -79,7 +81,25 @@ function PayPalSubscribeButton({ planId, planName }) {
 
 export default function PricingPage() {
     const navigate = useNavigate();
+    const [checkingAuth, setCheckingAuth] = useState(true);
     const [openIdx, setOpenIdx] = useState(0);
+
+    useEffect(() => {
+        const unsub = onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                navigate("/login?redirect=/pricing", { replace: true });
+                return;
+            }
+
+            setCheckingAuth(false);
+        });
+
+        return () => unsub();
+    }, [navigate]);
+
+    if (checkingAuth) {
+        return null;
+    }
 
     const plans = useMemo(
         () => [
