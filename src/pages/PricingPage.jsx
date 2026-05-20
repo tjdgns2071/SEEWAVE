@@ -97,10 +97,6 @@ export default function PricingPage() {
         return () => unsub();
     }, [navigate]);
 
-    if (checkingAuth) {
-        return null;
-    }
-
     const plans = useMemo(
         () => [
             {
