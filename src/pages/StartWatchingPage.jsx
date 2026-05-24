@@ -100,10 +100,34 @@ export default function StartWatchingPage() {
                     boxShadow: "0 24px 70px rgba(0,0,0,0.5)",
                 }}
             >
-                <h2 style={{ marginTop: 0 }}>Lesson player coming next</h2>
-                <p style={{ opacity: 0.7 }}>
-                    This is where the {categoryTitle} videos will appear.
-                </p>
+                {category === "visual-theory" && (
+                    <div
+                        style={{
+                            borderRadius: 28,
+                            overflow: "hidden",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            background: "rgba(255,255,255,0.02)",
+                            marginTop: 24,
+                        }}
+                    >
+                        <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+                            <iframe
+                                src="https://player.vimeo.com/video/1195069911?h=464ac0db85&badge=0&autopause=0&player_id=0&app_id=58479"
+                                frameBorder="0"
+                                allow="autoplay; fullscreen; picture-in-picture"
+                                allowFullScreen
+                                title="Visual Theory Lesson"
+                                style={{
+                                    position: "absolute",
+                                    top: 0,
+                                    left: 0,
+                                    width: "100%",
+                                    height: "100%",
+                                }}
+                            />
+                        </div>
+                    </div>
+                )}
             </section>
         </main>
     );
